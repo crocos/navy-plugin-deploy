@@ -1,0 +1,36 @@
+{
+    "name": "crocos/navy-plugin-deploy",
+    "description": "The navy plugin provides automation deploy workflow and release log management",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daichi Kamemoto",
+            "email": "yudoufu@crocos.co.jp"
+        },
+        {
+            "name": "Katsuhiro OGAWA",
+            "email": "ogawa@crocos.co.jp"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/crocos/Navy"
+        }
+    ],
+    "require": {
+        "crocos/navy": "dev-develop",
+        "psr/log": "*",
+        "symfony/dependency-injection": "*",
+        "monolog/monolog": "*"
+    },
+    "require-dev": {
+        "phake/phake": "dev-master",
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Crocos\\Plugin\\DeployPlugin\\": "src/"
+        }
+    }
+}
