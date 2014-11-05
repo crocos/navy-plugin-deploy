@@ -1,5 +1,5 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Release;
+namespace Crocos\Navy\DeployPlugin\Release;
 
 use Navy\GitHub\WebHook\PullRequest;
 

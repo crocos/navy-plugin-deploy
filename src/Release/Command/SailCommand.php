@@ -1,7 +1,7 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Release\Command;
+namespace Crocos\Navy\DeployPlugin\Release\Command;
 
-use Crocos\Plugin\DeployPlugin\Release\AbstractCommand;
+use Crocos\Navy\DeployPlugin\Release\AbstractCommand;
 
 class SailCommand extends AbstractCommand
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\ReleaseLog;
+namespace Crocos\Navy\DeployPlugin\ReleaseLog;
 
 class Period
 {

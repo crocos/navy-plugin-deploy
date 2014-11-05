@@ -1,12 +1,12 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Hook;
+namespace Crocos\Navy\DeployPlugin\Hook;
 
 use Navy\GitHub\WebHook\PullRequest;
 use Navy\Hook\HookInterface;
 use Navy\Hook\PullRequestEvent;
 use Navy\BranchMatcher;
-use Crocos\Plugin\DeployPlugin\ReleaseLog\Logger;
-use Crocos\Plugin\DeployPlugin\ReleaseLog\Notifier;
+use Crocos\Navy\DeployPlugin\ReleaseLog\Logger;
+use Crocos\Navy\DeployPlugin\ReleaseLog\Notifier;
 
 class ReleaseLogHook implements HookInterface
 {

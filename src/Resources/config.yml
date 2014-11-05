@@ -1,35 +1,35 @@
 services:
   deploy.hook.queuing:
-    class: Crocos\Plugin\DeployPlugin\Hook\QueuingHook
+    class: Crocos\Navy\DeployPlugin\Hook\QueuingHook
     arguments:
       - @release.queue
       - @release.branch_matcher
       - @release.flow_resolver
 
   deploy.hook.releaselog:
-    class: Crocos\Plugin\DeployPlugin\Hook\ReleaseLogHook
+    class: Crocos\Navy\DeployPlugin\Hook\ReleaseLogHook
     arguments:
       - @releaselog.logger
       - @releaselog.notifier
       - @releaselog.branch_matcher
 
   shell:
-    class: Crocos\Plugin\DeployPlugin\Shell
+    class: Crocos\Navy\DeployPlugin\Shell
 
 
   # release
   release.flow_resolver_factory:
-    class: Crocos\Plugin\DeployPlugin\Release\FlowResolverFactory
+    class: Crocos\Navy\DeployPlugin\Release\FlowResolverFactory
     arguments:
       - %release.flow%
 
   release.flow_resolver:
-    class: Crocos\Plugin\DeployPlugin\Release\FlowResolver
+    class: Crocos\Navy\DeployPlugin\Release\FlowResolver
     factory_service: release.flow_resolver_factory
     factory_method: create
 
   release.controller:
-    class: Crocos\Plugin\DeployPlugin\Release\ReleaseController
+    class: Crocos\Navy\DeployPlugin\Release\ReleaseController
     arguments:
       - @release.queue
       - @release.command_context
@@ -42,17 +42,17 @@ services:
     alias: release.file_queue
 
   release.file_queue:
-    class: Crocos\Plugin\DeployPlugin\Release\FileQueue
+    class: Crocos\Navy\DeployPlugin\Release\FileQueue
     arguments:
       - %queue.dir%
 
   release.command_context:
-    class: Crocos\Plugin\DeployPlugin\Release\CommandContext
+    class: Crocos\Navy\DeployPlugin\Release\CommandContext
     calls:
       - [ setEnv, [ %release.command_context.env% ] ]
 
   release.command_resolver:
-    class: Crocos\Plugin\DeployPlugin\Release\CommandResolver
+    class: Crocos\Navy\DeployPlugin\Release\CommandResolver
     arguments:
       - @release.command_context
       - @shell
@@ -60,22 +60,22 @@ services:
       - @logger
 
   release.command.anchor:
-    class: Crocos\Plugin\DeployPlugin\Release\Command\AnchorCommand
+    class: Crocos\Navy\DeployPlugin\Release\Command\AnchorCommand
     arguments:
       - %release.lockfile%
 
   release.command.sail:
-    class: Crocos\Plugin\DeployPlugin\Release\Command\SailCommand
+    class: Crocos\Navy\DeployPlugin\Release\Command\SailCommand
     arguments:
       - %release.lockfile%
 
   release.command.watch:
-    class: Crocos\Plugin\DeployPlugin\Release\Command\WatchCommand
+    class: Crocos\Navy\DeployPlugin\Release\Command\WatchCommand
     arguments:
       - %release.lockfile%
 
   release.worker:
-    class: Crocos\Plugin\DeployPlugin\Release\Worker
+    class: Crocos\Navy\DeployPlugin\Release\Worker
     arguments:
       - @release.queue
       - @release.controller
@@ -89,24 +89,24 @@ services:
 
   # releaselog
   releaselog.logger:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\Logger
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\Logger
     arguments:
       - @releaselog.logfile
       - @releaselog.period
       - @releaselog.markdown_scraper
 
   releaselog.logfile:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\LogFile
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\LogFile
     arguments:
       - %releaselog.logfile.config%
 
   releaselog.period:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\Period
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\Period
     arguments:
       - ~
 
   releaselog.notifier:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\Notifier
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\Notifier
     arguments:
       - @releaselog.markdown_scraper
       - %releaselog.notifier.hipchat.rooms%
@@ -117,13 +117,13 @@ services:
       - %releaselog.pullrequest.username.command%
 
   releaselog.reader:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\Reader
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\Reader
     arguments:
       - @releaselog.logfile
       - @releaselog.period
 
   releaselog.markdown_scraper:
-    class: Crocos\Plugin\DeployPlugin\ReleaseLog\MarkdownScraper
+    class: Crocos\Navy\DeployPlugin\ReleaseLog\MarkdownScraper
 
   releaselog.branch_matcher:
     class: Navy\BranchMatcher
