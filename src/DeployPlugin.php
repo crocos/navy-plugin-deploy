@@ -1,5 +1,5 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin;
+namespace Crocos\Navy\DeployPlugin;
 
 use Navy\Plugin\AbstractPlugin;
 

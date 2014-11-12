@@ -1,8 +1,8 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Release\Command;
+namespace Crocos\Navy\DeployPlugin\Release\Command;
 
-use Crocos\Plugin\DeployPlugin\Release\AbstractCommand;
-use Crocos\Plugin\DeployPlugin\Shell;
+use Crocos\Navy\DeployPlugin\Release\AbstractCommand;
+use Crocos\Navy\DeployPlugin\Shell;
 
 class ExecCommand extends AbstractCommand
 {

@@ -1,10 +1,10 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Release;
+namespace Crocos\Navy\DeployPlugin\Release;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Crocos\Plugin\DeployPlugin\Release\Command\AliasCommand;
-use Crocos\Plugin\DeployPlugin\Release\Command\ExecCommand;
-use Crocos\Plugin\DeployPlugin\Shell;
+use Crocos\Navy\DeployPlugin\Release\Command\AliasCommand;
+use Crocos\Navy\DeployPlugin\Release\Command\ExecCommand;
+use Crocos\Navy\DeployPlugin\Shell;
 use Psr\Log\LoggerInterface;
 
 class CommandResolver

@@ -1,5 +1,5 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\ReleaseLog;
+namespace Crocos\Navy\DeployPlugin\ReleaseLog;
 
 use Navy\GitHub\WebHook\PullRequest;
 use Monolog\Logger as Monolog_Logger;

@@ -1,7 +1,7 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Release;
+namespace Crocos\Navy\DeployPlugin\Release;
 
-use Crocos\Plugin\DeployPlugin\Shell;
+use Crocos\Navy\DeployPlugin\Shell;
 use Navy\BranchMatcher;
 use Psr\Log\LoggerInterface;
 

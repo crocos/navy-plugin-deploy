@@ -1,6 +1,6 @@
 <?php
 
-namespace Crocos\Plugin\DeployPlugin;
+namespace Crocos\Navy\DeployPlugin;
 
 class Shell
 {

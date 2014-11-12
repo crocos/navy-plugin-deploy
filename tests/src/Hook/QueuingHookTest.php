@@ -1,12 +1,12 @@
 <?php
-namespace Crocos\Plugin\DeployPlugin\Hook;
+namespace Crocos\Navy\DeployPlugin\Hook;
 
 use Navy\GitHub\WebHook as Gh;
 use Navy\Hook\PullRequestEvent;
 use Navy\BranchMatcher;
-use Crocos\Plugin\DeployPlugin\Release\QueueInterface;
-use Crocos\Plugin\DeployPlugin\Release\FlowInterface;
-use Crocos\Plugin\DeployPlugin\Release\FlowResolver;
+use Crocos\Navy\DeployPlugin\Release\QueueInterface;
+use Crocos\Navy\DeployPlugin\Release\FlowInterface;
+use Crocos\Navy\DeployPlugin\Release\FlowResolver;
 use Phake;
 
 class QueuingHookTest extends \PHPUnit_Framework_TestCase
