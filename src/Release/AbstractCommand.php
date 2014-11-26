@@ -1,6 +1,7 @@
 <?php
 namespace Crocos\Navy\DeployPlugin\Release;
 
+use Navy\Notifier\NotifierInterface;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractCommand implements CommandInterface
@@ -19,6 +20,11 @@ abstract class AbstractCommand implements CommandInterface
     public function setArgs(array $args)
     {
         $this->args = $args;
+    }
+
+    public function setNotifier(NotifierInterface $notifier)
+    {
+        $this->notifier = $notifier;
     }
 
     public function setLogger(LoggerInterface $logger)

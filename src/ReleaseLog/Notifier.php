@@ -2,87 +2,53 @@
 namespace Crocos\Navy\DeployPlugin\ReleaseLog;
 
 use Navy\GitHub\WebHook\PullRequest;
-use Monolog\Logger as Monolog_Logger;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\HipChatHandler;
+use Navy\Notifier\NotifierInterface;
+use Crocos\Navy\DeployPlugin\Release\CommandContext;
 
 class Notifier
 {
-    public function __construct(MarkdownScraper $scraper, $targetRooms, $topics, $hipchatToken, $hipchatName, $labelMapping, $usernameCommand)
+    public function __construct(NotifierInterface $notifier, CommandContext $context, MarkdownScraper $scraper, array $config)
     {
+        $this->notifier = $notifier;
+        $this->context = $context;
         $this->scraper = $scraper;
-        $this->targetRooms = $targetRooms;
-        $this->topics = $topics;
-        $this->hipchatToken = $hipchatToken;
-        $this->hipchatName = $hipchatName;
-        $this->labelMapping = $labelMapping;
-        $this->usernameCommand = $usernameCommand;
+        $this->config = $config;
     }
 
     public function notify(PullRequest $pullRequest)
     {
         $body = $pullRequest->getBody();
 
-        $pattern = '/\*\s*\[x\]\s*HipChat:\s*(.*)/i';
-        if (preg_match_all($pattern, $body, $matches, PREG_SET_ORDER)) {
-            if (empty($matches)) {
-                throw new \UnexpectedValueException('empty Release Log Message.');
-            }
+        $message = $this->createMessage($pullRequest);
 
-            $logger = new Monolog_Logger('logger');
+        foreach ($this->notifier->getAdapters() as $type => $adapter) {
+            $pattern = '/\*\s*\[x\]\s*' . $type . ':\s*(.+)/i';
 
-            $roomIds = [];
-            foreach ($matches as $line) {
-                list($key, $mentions) = $this->fetchTarget($line[1]);
-
-                if (array_key_exists($key, $this->targetRooms)) {
-                    $roomIds[$this->targetRooms[$key]] = $mentions;
+            if (preg_match_all($pattern, $body, $matches, PREG_SET_ORDER)) {
+                $channels = [];
+                foreach ($matches as $line) {
+                    list($channel, $mentions) = $this->parseChannel($line[1]);
+                    $channels[$channel] = $mentions;
                 }
-            }
 
-            if (!empty($roomIds)) {
-                $message = $this->createMessage($pullRequest);
-
-                $formatter = new LineFormatter('%message%', null, true); // multiline
-
-                foreach ($roomIds as $id => $mentions) {
-                    $handler = new HipChatHandler(
-                        $this->hipchatToken,
-                        $id,
-                        $this->hipchatName,
-                        true);
-
-                    $handler->setLevel(Monolog_Logger::DEBUG);
-                    $handler->setFormatter($formatter);
-
-                    $logger->pushHandler($handler);
-                    $logger->debug($this->buildHipChatMessage($message, $mentions));
-                    $logger->popHandler();
+                foreach ($channels as $channel => $mentions) {
+                    $message = $this->fixMessage($message, $mentions);
+                    $adapter->notifyChannel($channel, $message);
                 }
             }
         }
-        #TODO mail send
     }
 
-    /**
-     * @return array(roomid, array(mentions))
-     */
-    protected function fetchTarget($target)
+    protected function parseChannel($target)
     {
-        $target = trim($target);
-        if (false === ($position = strpos($target, ' @')) ) {
-            return [ $target, [] ];
-        }
+        $mentions = preg_split('/[\s,]+/', $target);
 
-        $roomId = substr($target, 0, $position);
-        $follow = substr($target, $position + 1);
+        $channel = array_shift($mentions);
 
-        $mentions = array_filter(explode(' ', trim($follow)));
-
-        return [ trim($roomId), $mentions ];
+        return [$channel, $mentions];
     }
 
-    protected function buildHipChatMessage($body, $mentions = [])
+    protected function fixMessage($body, $mentions = [])
     {
         $target = '';
         if (!empty($mentions)) {
@@ -109,7 +75,7 @@ PR url: $url
 
 EOL;
 
-        foreach ($this->topics as $subject) {
+        foreach ($this->config['topics'] as $subject) {
             $message .= $this->prittyScriping($source, $subject);
         }
 
@@ -119,26 +85,17 @@ EOL;
     protected function createLabelsForLine(PullRequest $pullRequest)
     {
         $labels = [];
-        $labelCollection = $pullRequest->getIssue()->getLabels();
 
+        $labelCollection = $pullRequest->getIssue()->getLabels();
         if (!empty($labelCollection)) {
             $labels = array_map(function ($v) {
-                return array_key_exists($v, $this->labelMapping) ? $this->labelMapping[$v] : $v;
+                return isset($this->config['labels'][$v]) ? $this->config['labels'][$v] : $v;
             }, iterator_to_array($labelCollection));
         }
-        $labels[] = '担当:' . $this->detectUsername($pullRequest->getMergedUser());
+
+        $labels[] = '担当: ' . $this->context->run('username(' . $pullRequest->getMergedUser() . ')');
 
         return implode(' / ', $labels);
-    }
-
-    /**
-     * usernameを正規化
-     */
-    protected function detectUsername($username)
-    {
-        $command = sprintf($this->usernameCommand, $username);
-
-        return `$command`;
     }
 
     protected function prittyScriping($source, $subject)

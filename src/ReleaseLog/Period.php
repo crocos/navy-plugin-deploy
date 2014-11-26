@@ -9,6 +9,7 @@ class Period
     {
         $this->datetime = $datetime ?: new \DateTime();
     }
+
     public function getRecentPeriod()
     {
         return $this->datetime->modify('+1 Friday')->format('Ymd');

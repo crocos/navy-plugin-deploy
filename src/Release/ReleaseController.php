@@ -3,6 +3,7 @@ namespace Crocos\Navy\DeployPlugin\Release;
 
 use Crocos\Navy\DeployPlugin\Shell;
 use Navy\BranchMatcher;
+use Navy\Notifier\NotifierInterface;
 use Psr\Log\LoggerInterface;
 
 class ReleaseController
@@ -12,6 +13,7 @@ class ReleaseController
     protected $shell;
     protected $matcher;
     protected $resolver;
+    protected $notifier;
     protected $logger;
 
     public function __construct(
@@ -20,6 +22,7 @@ class ReleaseController
         Shell $shell,
         BranchMatcher $matcher,
         FlowResolver $resolver,
+        NotifierInterface $notifier,
         LoggerInterface $logger
     )
     {
@@ -28,6 +31,7 @@ class ReleaseController
         $this->shell = $shell;
         $this->matcher = $matcher;
         $this->resolver = $resolver;
+        $this->notifier = $notifier;
         $this->logger = $logger;
     }
 
@@ -174,7 +178,7 @@ EOL;
 
         $message = str_replace(array_keys($replacements), array_values($replacements), $message);
 
-        $this->logger->notice($message);
+        $this->notifier->notify($message);
     }
 
     protected function endNotification(array $deployTargets)
@@ -183,7 +187,7 @@ EOL;
             $prURLs[] = $target->getPullRequestUrl();
         }
 
-        $this->logger->notice('リリース完了！ (*ﾟ∇ﾟ)_∠※☆PAN！' . PHP_EOL . implode(PHP_EOL, $prURLs));
+        $this->notifier->notify('リリース完了！ (*ﾟ∇ﾟ)_∠※☆PAN！' . PHP_EOL . implode(PHP_EOL, $prURLs));
     }
 
     protected function removeTargets(array $deployTargets, DeployTarget $origTarget)

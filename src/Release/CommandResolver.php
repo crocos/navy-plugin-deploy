@@ -5,6 +5,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Crocos\Navy\DeployPlugin\Release\Command\AliasCommand;
 use Crocos\Navy\DeployPlugin\Release\Command\ExecCommand;
 use Crocos\Navy\DeployPlugin\Shell;
+use Navy\Notifier\NotifierInterface;
 use Psr\Log\LoggerInterface;
 
 class CommandResolver
@@ -12,13 +13,15 @@ class CommandResolver
     protected $context;
     protected $shell;
     protected $container;
+    protected $notifier;
     protected $logger;
 
-    public function __construct(CommandContext $context, Shell $shell, ContainerInterface $container, LoggerInterface $logger)
+    public function __construct(CommandContext $context, Shell $shell, ContainerInterface $container, NotifierInterface $notifier, LoggerInterface $logger)
     {
         $this->context = $context;
         $this->shell = $shell;
         $this->container = $container;
+        $this->notifier = $notifier;
         $this->logger = $logger;
     }
 
@@ -34,6 +37,7 @@ class CommandResolver
                 throw new InvalidArgumentException(sprintf('Cannot parse "%s" (%s)', $name, var_export($body, true)));
             }
 
+            $command->setNotifier($this->notifier);
             $command->setLogger($this->logger);
 
             $this->context->set($name, $command);
