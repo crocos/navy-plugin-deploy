@@ -18,10 +18,15 @@ services:
 
 
   # release
+  release.branch_matcher:
+    class: Navy\BranchMatcher
+    arguments:
+      - %deploy.release.repository%
+
   release.flow_resolver_factory:
     class: Crocos\Navy\DeployPlugin\Release\FlowResolverFactory
     arguments:
-      - %release.flow%
+      - %deploy.release.flow%
 
   release.flow_resolver:
     class: Crocos\Navy\DeployPlugin\Release\FlowResolver
@@ -36,20 +41,23 @@ services:
       - @shell
       - @release.branch_matcher
       - @release.flow_resolver
+      - @notifier
       - @logger
 
   release.queue:
-    alias: release.file_queue
+    class: Crocos\Navy\DeployPlugin\Release\QueueInterface
+    factory_service: release.queue_provider
+    factory_method: get
 
-  release.file_queue:
-    class: Crocos\Navy\DeployPlugin\Release\FileQueue
+  release.queue_provider:
+    class: Crocos\Navy\DeployPlugin\Release\QueueProvider
     arguments:
-      - %queue.dir%
+      - %deploy.release.queue.config%
 
   release.command_context:
     class: Crocos\Navy\DeployPlugin\Release\CommandContext
     calls:
-      - [ setEnv, [ %release.command_context.env% ] ]
+      - [ setEnv, [ %deploy.release.command.env% ] ]
 
   release.command_resolver:
     class: Crocos\Navy\DeployPlugin\Release\CommandResolver
@@ -57,22 +65,23 @@ services:
       - @release.command_context
       - @shell
       - @service_container
+      - @notifier
       - @logger
 
   release.command.anchor:
     class: Crocos\Navy\DeployPlugin\Release\Command\AnchorCommand
     arguments:
-      - %release.lockfile%
+      - %deploy.release.command.lockfile%
 
   release.command.sail:
     class: Crocos\Navy\DeployPlugin\Release\Command\SailCommand
     arguments:
-      - %release.lockfile%
+      - %deploy.release.command.lockfile%
 
   release.command.watch:
     class: Crocos\Navy\DeployPlugin\Release\Command\WatchCommand
     arguments:
-      - %release.lockfile%
+      - %deploy.release.command.lockfile%
 
   release.worker:
     class: Crocos\Navy\DeployPlugin\Release\Worker
@@ -81,13 +90,13 @@ services:
       - @release.controller
       - @logger
 
-  release.branch_matcher:
-    class: Navy\BranchMatcher
-    arguments:
-      - %deploy.repository%
-
 
   # releaselog
+  releaselog.branch_matcher:
+    class: Navy\BranchMatcher
+    arguments:
+      - %deploy.releaselog.repository%
+
   releaselog.logger:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\Logger
     arguments:
@@ -98,7 +107,7 @@ services:
   releaselog.logfile:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\LogFile
     arguments:
-      - %releaselog.logfile.config%
+      - %deploy.releaselog.logger.config%
 
   releaselog.period:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\Period
@@ -108,13 +117,10 @@ services:
   releaselog.notifier:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\Notifier
     arguments:
+      - @notifier
+      - @release.command_context
       - @releaselog.markdown_scraper
-      - %releaselog.notifier.hipchat.rooms%
-      - %releaselog.notifier.pullrequest.topics%
-      - %releaselog.notifier.hipchat.token%
-      - %releaselog.notifier.hipchat.name%
-      - %releaselog.pullrequest.labels.mapping%
-      - %releaselog.pullrequest.username.command%
+      - %deploy.releaselog.notifier.config%
 
   releaselog.reader:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\Reader
@@ -124,8 +130,3 @@ services:
 
   releaselog.markdown_scraper:
     class: Crocos\Navy\DeployPlugin\ReleaseLog\MarkdownScraper
-
-  releaselog.branch_matcher:
-    class: Navy\BranchMatcher
-    arguments:
-      - %releaselog.hook.repository%

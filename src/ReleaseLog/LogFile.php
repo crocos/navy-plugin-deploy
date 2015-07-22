@@ -18,7 +18,7 @@ class LogFile
     protected function createFile($filename)
     {
         if (! file_exists($this->config['dir'])) {
-            mkdir($dir, $this->config['permission']);
+            mkdir($this->config['dir'], $this->config['permission']);
         }
 
         touch($filename);

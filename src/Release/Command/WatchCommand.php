@@ -24,11 +24,11 @@ class WatchCommand extends AbstractCommand
                 ];
                 $message = str_replace(array_keys($replacements), array_values($replacements), $message);
 
-                $this->logger->notice($message);
+                $this->notifier->notify($message);
             }
 
             if (++$count > static::LIMIT) {
-                $this->logger->notice('もうずっとリリースが止まりっぱなしです.確認よろしくー @here');
+                $this->notifier->notify('もうずっとリリースが止まりっぱなしです.確認よろしくー @channel');
                 $count = 0;
             }
 
@@ -36,7 +36,7 @@ class WatchCommand extends AbstractCommand
         }
 
         if ($count > 0) {
-            $this->logger->info('リリースを再開しました');
+            $this->notifier->notify('リリースを再開しました');
         }
     }
 }
